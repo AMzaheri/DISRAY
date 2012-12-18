@@ -1,0 +1,93 @@
+
+ ***************************************************************************
+ *              ____   ___  ____   ____       _   __   __                  *
+ *             |  _ \ |_ _|/ ___| |  _ \     / \  \ \ / /                  *
+ *             | | | | | | \___ \ | |_) |   / _ \  \ V /                   *
+ *             | |_| | | |  ___) ||  _ <   / ___ \  | |                    *
+ *             |____/ |___||____/ |_| \_\ /_/   \_\ |_|   VERSION 1.       *
+ *                                                                         *
+ * +-----------+---------------------------------------------------------+ *
+ * |  Version  | 1                                                       | *
+ * +-----------+---------------------------------------------------------+ *
+ * |  Year     | 2012                                                    | *
+ * +-----------+---------------------------------------------------------+ *
+ * | Authors   | Afsaneh Mohammadzaheri <afsaneh.mohamadzaheri@gmail.com>| *
+ * |           | Hossein Sadeghi <sadeghi@um.ac.ir>                      | *
+ * |           | Keyvan Hosseini <k-hosseini@um.ac.ir>                   | *
+ * |           | Mahdi Navazandeh <m.navazandeh@gmail.com>               | *
+ * +-----------+---------------------------------------------------------+ *
+ * |  Copyright (c) 2012 The DISRAY Authors. All rights reserved.        | *
+ * +---------------------------------------------------------------------+ *
+ * |  DISRAY : A Distributed Ray tracing by Map-Reduce.                  | *
+ * |  Make sure the input(source) is set.                                | *
+ * +------------------------------------------------------------------ --+ *
+ *                                                                         *
+ ***************************************************************************
+
+
+
+DISRAY
+
+This is a distributed one-dimensional ray tracing algorithm based on Map-Reduce. It computes different phases (direct, converted, reflected from three main discontinuities of Moho, CMB, and outer-inner core boundary) and their paths in a radial homogeneuse media distributedly and rapidly  and sorts different phases according to the epicentral distance. This program uses iaspei91 model as the velocity model. It can run on a variety of different distributed systems. It is the duty of Map to do ray tracing computations for different take-off angles. The output of Map is a file named “source” including three numbers (the depth of the source in km, the shooting angle interval in degree, and a number in degree that is used in Reduce function). Reduce determines the minimum path of different phases for an interval distance (in degree) on a great semicircle. The distance interval on the great semicircle can be changed by user. This variable is the third number in “source” file. The phases defined in Reduce include: crustal phases (p, s : either a wave bottoming in the crust or a upgoing wave from a source in the crust ), uppermost mantle phases (Pn, Sn), reflected from moho phases (PmP, PmS, SmS, SmP), mantle phases (P ,S : a wave, bottoming below the uppermost mantle; also an upgoing wave from a source below the uppermost mantle), reflected from CMB phases (PcP, PcS, ScP, ScS), and core phases (PkP : P wave bottoming in the core) . A sample of the source file is presented in the data directory.
+
+*************************************************************************
+Getting started with DISRAY
+DISRAY manager is written in Python 2.7 and bash. GCC compiler is employed for compiling the programs.  The DISRAY program is needed to be installed only once for first time users. In terminal go to the path where DISRAY directory is and type the command “source setup”. Then it is asked to enter IP, username and password of all nodes (clients) participating in the parallelism. Thereafter it is asked to enter those of the master node. Finally, by entering the “Q” letter the installation procedure will be done. The only requirement for correctly performing the algorithm on a cluster of computers is the SSH (Secure Shell) network protocol. If installation finishes successfully DISRAY directory will appear in Home directory of all clients. It contains some subdirectories and files including bin, data, lib, prog, config, log, setup.
+ Input and output data are put in the data directory. “source” is only input of the programs. Final outputs of the program are “out1” and “out2”. The outputs of Map are named “Map” and “raypath”. The outputs of Reduce are “reduce” and “path”. Each client has its own outputs and inputs. However, server node has access to those of all nodes.
+prog consists of Map, Reduce and final Reduce programs. These programs are written in C.
+bin and lib directories include the DISRAY manager and libraries, respectively.   
+log : Here, there is one file per client for listing errors and warnings which happened during the running process of the programs.
+config : this directory includes id and count files which contain the identifier of the current client performing the algorithm and total number of the clients participating in the parallelism, respectively.  DISRAY.hosts  contains the information of the clients. 
+After installing DISRAY, it will simply run by typing “startDISRAY” command. Befor running the program be sure the source file is placed in data directory.
+**********************************************************************
+afsaneh@ali2:~$ cd DISRAY
+afsaneh@ali2:~/DISRAY$ source setup
+Welcom to DISRAY,a distributed program for ray tracing.
+
+
+A) Add client/s
+S) Server info.
+P) show clients
+Q) Quit setup
+
+commands [A]:A
+
+IP or [enter] : 192.168.104.90
+Enter (192.168.104.90) user-name : [node] afsaneh
+Enter (afsaneh@192.168.104.90) passwoard : [pass] 110
+.
+.
+.
+
+IP or [enter] : 
+
+A) Add client/s
+S) Server info.
+P) show clients
+Q) Quit setup
+
+commands [A]:S
+
+Server ip or Hostname : 192.108.104.90
+Enter username : afsaneh
+Enter Server pass : 110
+
+A) Add client/s
+S) Server info.
+P) show clients
+Q) Quit setup
+
+commands [A]:Q
+Good By
+ssh OK  for [afsaneh@192.168.104.90].
+.
+.
+afsaneh@ali2:~/DISRAY$ 
+afsaneh@ali2:~/DISRAY$ startDISRAY
+-ok 192.168.104.90 afsaneh 110
+.
+.
+afsaneh@ali2:~/DISRAY$ 
+ 
+************************************************************************* General information of the operation system which we successfully used:
+Ubuntu-11.04(natty) .  Kernel linux  2.6.38-8-generic GNOME  2.32.1.
